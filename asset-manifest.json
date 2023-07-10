@@ -1,16 +1,16 @@
 {
   "files": {
-    "main.css": "/static/css/main.073c9b0a.css",
-    "main.js": "/static/js/main.89b81e8b.js",
-    "static/js/787.908c41ee.chunk.js": "/static/js/787.908c41ee.chunk.js",
-    "static/media/logo.svg": "/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
-    "index.html": "/index.html",
-    "main.073c9b0a.css.map": "/static/css/main.073c9b0a.css.map",
-    "main.89b81e8b.js.map": "/static/js/main.89b81e8b.js.map",
-    "787.908c41ee.chunk.js.map": "/static/js/787.908c41ee.chunk.js.map"
+    "main.css": "/balloonhouse/static/css/main.073c9b0a.css",
+    "main.js": "/balloonhouse/static/js/main.3ed3970b.js",
+    "static/js/787.908c41ee.chunk.js": "/balloonhouse/static/js/787.908c41ee.chunk.js",
+    "static/media/logo.svg": "/balloonhouse/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
+    "index.html": "/balloonhouse/index.html",
+    "main.073c9b0a.css.map": "/balloonhouse/static/css/main.073c9b0a.css.map",
+    "main.3ed3970b.js.map": "/balloonhouse/static/js/main.3ed3970b.js.map",
+    "787.908c41ee.chunk.js.map": "/balloonhouse/static/js/787.908c41ee.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.073c9b0a.css",
-    "static/js/main.89b81e8b.js"
+    "static/js/main.3ed3970b.js"
   ]
 }
