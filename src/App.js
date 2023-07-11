@@ -1,8 +1,12 @@
-import House from './House';
+import styles from "./App.module.css"
+import Balloon from "./Balloon"
+import House from "./House"
+
 
 function App() {
   return (
-    <div>
+    <div className={styles.sky}>
+      <Balloon />
       <House />
     </div>
   );
