@@ -1,13 +1,10 @@
 {
   "files": {
-    "main.css": "/balloonhouse/static/css/main.c3741c22.css",
-    "main.js": "/balloonhouse/static/js/main.47853e70.js",
+    "main.js": "/balloonhouse/static/js/main.2a68d5a3.js",
     "index.html": "/balloonhouse/index.html",
-    "main.c3741c22.css.map": "/balloonhouse/static/css/main.c3741c22.css.map",
-    "main.47853e70.js.map": "/balloonhouse/static/js/main.47853e70.js.map"
+    "main.2a68d5a3.js.map": "/balloonhouse/static/js/main.2a68d5a3.js.map"
   },
   "entrypoints": [
-    "static/css/main.c3741c22.css",
-    "static/js/main.47853e70.js"
+    "static/js/main.2a68d5a3.js"
   ]
 }
