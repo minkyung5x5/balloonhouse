@@ -1,6 +1,7 @@
 import styled, { keyframes } from "styled-components";
 import { useState } from 'react';
 import houseImg from "./assets/house.png";
+import Background from "./Background"
 
 
 function Home(){
@@ -28,7 +29,7 @@ function Home(){
             height: balloonHeight + 'px',
             balloonColor: balloonColorArr[Math.floor(Math.random() * balloonColorArr.length)],
             hilightColor: 'white',
-            leftInitial: randomInt(pad, vw - 100 - (balloonWidth + pad)) + 'px',
+            leftInitial: randomInt(pad, vw - (balloonWidth + pad)) + 'px',
             topInitial: randomInt(pad, vh - 300 - (balloonHeight + pad)) + 'px',
             stringAngle: '0deg',
         }
@@ -89,23 +90,33 @@ function Home(){
         return result;
     }
 
-
     return (
-        <Sky>
-            <Box>
-                {balloonSet()}
-            </Box>
-            <House onClick={() => addBalloon()} src={houseImg} />
-        </Sky>
+        <Bg>
+            <Background></Background>
+            <Objects>
+                <Box>
+                    {balloonSet()}
+                </Box>
+                <House onClick={() => addBalloon()} src={houseImg} />
+            </Objects>
+        </Bg>
     );
 }
 
-const Sky = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  height: 100vh;
-  background: linear-gradient(#00ebff, #0074f9);
+const Bg = styled.div`
+    position: static;
+    width: 100%;
+    height: 100vh;
+`
+
+const Objects = styled.div`
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100vh;
 `;
 
 const Box = styled.div`
