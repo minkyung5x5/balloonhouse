@@ -7,7 +7,6 @@ import Background from "./Background"
 
 
 function Home(){
-    const balloonNumber = 5;
     const balloonColorArr = ['#ff93aa', '#ff3e39', '#fdcc22', '#3b25cb', '#c7dd25'];
     const balloonShapeArr = ['bear', 'flower', 'circle', 'circle', 'circle'];
     const shapeWidth = {circle: 90, bear: 122, flower: 105};
@@ -15,14 +14,15 @@ function Home(){
     const [balloonArr, setBalloonArr] = useState(() => initBalloonArr());
 
     function initBalloonArr() {
+        const balloonNumber = 5;
         const result = [];
         for(let i = 0; i < balloonNumber; i++){
-            result.push(createBalloon());
+            result.push(createBalloon(i));
         }
         return result;
     }
 
-    function createBalloon() {
+    function createBalloon(i) {
         const vw = window.innerWidth;
         const vh = window.innerHeight;
         const shape = balloonShapeArr[Math.floor(Math.random() * balloonShapeArr.length)];
@@ -36,15 +36,15 @@ function Home(){
             height: balloonHeight + 'px',
             balloonColor: balloonColorArr[Math.floor(Math.random() * balloonColorArr.length)],
             hilightColor: 'white',
-            leftInitial: randomInt(pad, vw - (balloonWidth) + pad) + 'px',
-            topInitial: randomInt(pad, vh - 300 - (balloonHeight + pad )) + 'px',
+            leftInitial: randomIntWidth(vw, balloonWidth, i) + 'px',
+            topInitial: randomIntHeight(0, vh - 300 - (balloonHeight + pad )) + 'px',
             stringAngle: '0deg',
         }
         return newBalloon;
     }
 
     function addBalloon() {
-        const newBalloon = createBalloon();
+        const newBalloon = createBalloon(balloonArr.length);
         setBalloonArr([...balloonArr, newBalloon]);
     };
 
@@ -77,7 +77,17 @@ function Home(){
         return { angle: -angle+'deg', top, left, height, initialX, initialY, houseX, houseY}
     }
 
-    function randomInt(min, max) {
+    function randomIntWidth(vw, w, balloonNum) {
+        const section = balloonNum/5;
+        let min = vw/2 - (section + 1) * w;
+        let max = vw/2 + section * w;
+        if (min < 0) { min = 0; }
+        if (max > vw - w) { max = vw - w;}
+        if (max == null) { max = min; min = 0; }
+        if (min > max) { var tmp = min; min = max; max = tmp; }
+        return Math.floor(min + (max - min + 1) * Math.random());
+    }
+    function randomIntHeight(min, max) {
         if (max == null) { max = min; min = 0; }
         if (min > max) { var tmp = min; min = max; max = tmp; }
         return Math.floor(min + (max - min + 1) * Math.random());
