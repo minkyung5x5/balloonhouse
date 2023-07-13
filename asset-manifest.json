@@ -1,11 +1,13 @@
 {
   "files": {
-    "main.js": "/balloonhouse/static/js/main.9f2fe9b2.js",
+    "main.js": "/balloonhouse/static/js/main.09877d59.js",
     "static/media/house.png": "/balloonhouse/static/media/house.1cfdb9eeefc46dcaa179.png",
+    "static/media/bear.png": "/balloonhouse/static/media/bear.c7c37dcc4170f7fc52cc.png",
+    "static/media/flower.png": "/balloonhouse/static/media/flower.c7b780d0c711b49c517c.png",
     "index.html": "/balloonhouse/index.html",
-    "main.9f2fe9b2.js.map": "/balloonhouse/static/js/main.9f2fe9b2.js.map"
+    "main.09877d59.js.map": "/balloonhouse/static/js/main.09877d59.js.map"
   },
   "entrypoints": [
-    "static/js/main.9f2fe9b2.js"
+    "static/js/main.09877d59.js"
   ]
 }
