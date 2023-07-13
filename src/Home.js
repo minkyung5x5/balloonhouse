@@ -1,9 +1,11 @@
 import styled from "styled-components";
 import { useState } from 'react';
+import houseImg from "./assets/house.png";
 
-function Balloon(){
+
+function Home(){
     const balloonNumber = 5;
-    const balloonColorArr = ['red', '#F2F24B', '#20B1A3', 'dodgerblue', 'orange'];
+    const balloonColorArr = ['#ff93aa', '#ff3e39', '#fdcc22', '#3b25cb', '#c7dd25'];
     const [balloonArr, setBalloonArr] = useState(()=>initBalloonArr());
 
     function initBalloonArr() {
@@ -43,30 +45,26 @@ function Balloon(){
         setBalloonArr(newBalloonArr);
     };
 
-    function calcStringAngle(balloon){
+    function calcBalloonProps(balloon){
         const vw = window.innerWidth;
         const vh = window.innerHeight;
-        const left1 = parseInt(balloon.leftInitial, 10) + parseInt(balloon.width, 10)/2;
-        const top1 = parseInt(balloon.topInitial, 10) + parseInt(balloon.height, 10) - 5;
+        const bw = parseInt(balloon.width, 10);
+        const bh = parseInt(balloon.height, 10);
+
+        const left1 = parseInt(balloon.leftInitial, 10) + bw/2;
+        const top1 = parseInt(balloon.topInitial, 10) + bh/2;
         const left2 = vw/2;
         const top2 = vh - 140;
         const dx = left2-left1;
         const dy = top2-top1;
 
-        return -Math.round(Math.atan(dx/dy) * 180 / Math.PI) + 'deg'
-    };
+        const angle = Math.round(Math.atan(dx/dy) * 180 / Math.PI);
+        const height = Math.sqrt(dx*dx + dy*dy);
+        const top = bh/2 + (bh/2+10) * Math.cos(angle * (Math.PI / 180));
+        const left = bw/2 + (bh/2+10) * Math.sin(angle * (Math.PI / 180));
 
-    function calcStringHeight(balloon){
-        const vw = window.innerWidth;
-        const vh = window.innerHeight;
-        const left1 = parseInt(balloon.leftInitial, 10) + parseInt(balloon.width, 10)/2;
-        const top1 = parseInt(balloon.topInitial, 10) + parseInt(balloon.height, 10) - 5;
-        const left2 = vw/2;
-        const top2 = vh - 140;
-        const dx = left2-left1;
-        const dy = top2-top1;
-        return Math.sqrt(dx*dx + dy*dy)
-    };
+        return { angle: -angle+'deg', height, top, left }
+    }
 
     function randomInt(min, max) {
         if (max == null) { max = min; min = 0; }
@@ -74,17 +72,28 @@ function Balloon(){
         return Math.floor(min + (max - min + 1) * Math.random());
     }
 
+    const balloonSet = () => {
+        const result = [];
+        for (let i = 0; i < balloonArr.length; i++) {
+            const b = balloonArr[i];
+            const balloonProps = calcBalloonProps(b);
+            result.push(
+                <BalloonWrapper key={i} onClick={() => removeBalloon(i)} $leftInitial={b.leftInitial} $topInitial={b.topInitial}>
+                    <BalloonDiv $balloonColor={b.balloonColor} $hilightColor={b.hilightColor} $angle={balloonProps.angle}></BalloonDiv>
+                    <String $top={balloonProps.top} $left={balloonProps.left} $angle={balloonProps.angle} $height={balloonProps.height}></String>
+                </BalloonWrapper>
+            );
+        }
+        return result;
+    }
+
+
     return (
         <Sky>
             <Box>
-                {balloonArr.map((b, i) =>
-                <BalloonWrapper key={i} onClick={() => removeBalloon(i)} $leftInitial={b.leftInitial} $topInitial={b.topInitial}>
-                    <String $angle={calcStringAngle(b)} $height={calcStringHeight(b)}></String>
-                    <BalloonDiv $balloonColor={b.balloonColor} $hilightColor={b.hilightColor}></BalloonDiv>
-                </BalloonWrapper>
-                )}
+                {balloonSet()}
             </Box>
-            <StyledHouse onClick={() => addBalloon()}></StyledHouse>
+            <House onClick={() => addBalloon()} src={houseImg} />
         </Sky>
     );
 }
@@ -94,19 +103,20 @@ const Sky = styled.div`
   flex-direction: column;
   width: 100%;
   height: 100vh;
-  background: linear-gradient(rgb(255, 141, 141), rgb(33, 59, 255));
+  background: linear-gradient(#00ebff, #0074f9);
 `;
 
 const Box = styled.div`
     position: relative;
     display: block;
     width: 100%;
-    height: 600px;
+    height: ${window.innerHeight - 193}px;
     margin-left: auto;
     margin-right: auto;
 `;
 
 const BalloonWrapper = styled.div`
+    background-color: red;
     position: absolute;
     left: ${props => props.$leftInitial};
     top: ${props => props.$topInitial};
@@ -115,13 +125,14 @@ const BalloonWrapper = styled.div`
 
 const String = styled.div`
     position: absolute;
-    top: 110px;
-    left: 42px;
+    top:  ${props => props.$top}px;
+    left: ${props => props.$left}px;
     transform: rotate(${props => props.$angle});
     transform-origin: top left;
     width: 2px;
     height: ${props => props.$height}px;
-    background: #252525;
+    background: #000000ff;
+    opacity: 0.5;
 `;
 
 const BalloonDiv = styled.div`
@@ -130,7 +141,9 @@ const BalloonDiv = styled.div`
     height: 100px;
     background: ${props => props.$balloonColor};
     border-radius: 50%;
-
+    border: 1px solid black;
+    transform: rotate(${props => props.$angle});
+    
     &:before {
         content: '';
         position: absolute;
@@ -149,50 +162,26 @@ const BalloonDiv = styled.div`
         left: 50%;
         transform: translateX(-50%);
         bottom: -10px;
-        width: 10px;
+        width: 12px;
         height: 10px;
         background: ${props => props.$balloonColor};
-        clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%);
+        clip-path: polygon(30% 0%, 70% 0%, 100% 100%, 0% 100%);
+        border-radius: 20%;
+        border-bottom: 1px solid black;
       }
-
 `;
 
-const StyledHouse = styled.div`
-    align-self: flex-end;
-    background: rgb(5, 16, 44);
-    display: block;
-    height: 100px;
-    bottom: 0px;
+const House = styled.img`
+    position: relative;
+    aspect-ratio: auto;
+    width: 300px;
     margin-left: auto;
     margin-right: auto;
-    margin-top: 100px;
-    position: relative;
-    width: 200px;
-
-    &:before {
-        border-bottom: 80px solid rgb(5, 16, 44);
-        border-left: 100px solid transparent;
-        border-right: 100px solid transparent;
-        content: "";
-        height: 0;
-        left: 0;
-        position: absolute;
-        top: -80px;
-        width: 0;
-    }
+    transition: width 0.5s, height 0.5s;
 
     &:hover {
-        background: rgb(107, 133, 198);
+        width: 330px;
     }
 `;
 
-const Sample = styled.div`
-    background: rgb(255, 255, 255);
-    display: block;
-    margin-left: 234px;
-    margin-top: 514px;
-    height: 10px;
-    width: 10px;
-`;
-
-export default Balloon;
+export default Home;
