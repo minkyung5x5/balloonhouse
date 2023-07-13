@@ -1,13 +1,18 @@
 import styled, { keyframes } from "styled-components";
 import { useState } from 'react';
 import houseImg from "./assets/house.png";
+import bearImg from "./assets/bear.png";
+import flowerImg from "./assets/flower.png";
 import Background from "./Background"
 
 
 function Home(){
     const balloonNumber = 5;
     const balloonColorArr = ['#ff93aa', '#ff3e39', '#fdcc22', '#3b25cb', '#c7dd25'];
-    const [balloonArr, setBalloonArr] = useState(()=>initBalloonArr());
+    const balloonShapeArr = ['bear', 'flower', 'circle', 'circle', 'circle'];
+    const shapeWidth = {circle: 90, bear: 122, flower: 105};
+
+    const [balloonArr, setBalloonArr] = useState(() => initBalloonArr());
 
     function initBalloonArr() {
         const result = [];
@@ -20,17 +25,19 @@ function Home(){
     function createBalloon() {
         const vw = window.innerWidth;
         const vh = window.innerHeight;
-        const balloonWidth = 90;
+        const shape = balloonShapeArr[Math.floor(Math.random() * balloonShapeArr.length)];
+        const balloonWidth = shapeWidth[shape]; //{circle: 90, bear: 122, flower: 114};
         const balloonHeight = 100;
         const pad = 10;
 
         const newBalloon = {
+            shape,
             width: balloonWidth + 'px',
             height: balloonHeight + 'px',
             balloonColor: balloonColorArr[Math.floor(Math.random() * balloonColorArr.length)],
             hilightColor: 'white',
-            leftInitial: randomInt(pad, vw - (balloonWidth + pad)) + 'px',
-            topInitial: randomInt(pad, vh - 300 - (balloonHeight + pad)) + 'px',
+            leftInitial: randomInt(pad, vw - (balloonWidth) + pad) + 'px',
+            topInitial: randomInt(pad, vh - 300 - (balloonHeight + pad )) + 'px',
             stringAngle: '0deg',
         }
         return newBalloon;
@@ -62,8 +69,10 @@ function Home(){
 
         const angle = Math.round(Math.atan(dx/dy) * 180 / Math.PI);
         const height = Math.sqrt(dx*dx + dy*dy);
-        const top = bh/2 + (bh/2+10) * Math.cos(angle * (Math.PI / 180));
-        const left = bw/2 + (bh/2+10) * Math.sin(angle * (Math.PI / 180));
+        const shapeH = (balloon.shape === 'circle') ? bh/2 + 10 : bh/2;
+
+        const top = bh/2 + (shapeH) * Math.cos(angle * (Math.PI / 180));
+        const left = bw/2 + (shapeH) * Math.sin(angle * (Math.PI / 180));
 
         return { angle: -angle+'deg', top, left, height, initialX, initialY, houseX, houseY}
     }
@@ -82,7 +91,12 @@ function Home(){
             result.push(
                 <BalloonWrapper id={i} key={i} onClick={() => removeBalloon(i)} 
                 $topInitial={b.topInitial} $leftInitial={b.leftInitial} $initialX={balloonProps.initialX} $initialY={balloonProps.initialY} $houseX={balloonProps.houseX} $houseY={balloonProps.houseY}>
-                    <BalloonDiv $balloonColor={b.balloonColor} $hilightColor={b.hilightColor} $angle={balloonProps.angle}></BalloonDiv>
+                    {
+                        b.shape === 'circle' ? <BalloonDiv $balloonColor={b.balloonColor} $hilightColor={b.hilightColor} $angle={balloonProps.angle}></BalloonDiv>
+                        :b.shape === 'bear' ? <Bear $angle={balloonProps.angle} src={bearImg} />
+                        :b.shape === 'flower' ? <Flower $angle={balloonProps.angle} src={flowerImg} />
+                        :''
+                    }
                     <String $top={balloonProps.top} $left={balloonProps.left} $angle={balloonProps.angle} $height={balloonProps.height}></String>
                 </BalloonWrapper>
             );
@@ -117,6 +131,7 @@ const Objects = styled.div`
     left: 0px;
     width: 100%;
     height: 100vh;
+    overflow: hidden;
 `;
 
 const Box = styled.div`
@@ -185,7 +200,37 @@ const BalloonDiv = styled.div`
     }
 
     &:hover {
-        opacity: 0.5;
+        border: 2px solid black;
+        background: ${props => props.$balloonColor};
+    }
+`;
+
+const Bear = styled.img`
+    position: relative;
+    aspect-ratio: auto;
+    height: 100px;
+    margin-left: auto;
+    margin-right: auto;
+    transition: width 0.5s, height 0.5s;
+    transform: rotate(${props => props.$angle});
+
+    &:hover {
+        filter: grayscale(100%);
+    }
+`;
+
+const Flower = styled.img`
+    position: relative;
+    aspect-ratio: auto;
+    height: 100px;
+    margin-left: auto;
+    margin-right: auto;
+
+    transition: width 0.5s, height 0.5s;
+    transform: rotate(${props => props.$angle});
+
+    &:hover {
+        filter: grayscale(100%);
     }
 `;
 
