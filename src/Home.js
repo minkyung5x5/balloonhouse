@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 import { useState } from 'react';
 import houseImg from "./assets/house.png";
 
@@ -28,8 +28,8 @@ function Home(){
             height: balloonHeight + 'px',
             balloonColor: balloonColorArr[Math.floor(Math.random() * balloonColorArr.length)],
             hilightColor: 'white',
-            leftInitial: randomInt(pad, vw - (balloonWidth + pad)) + 'px',
-            topInitial: randomInt(pad, vh - 140 - (balloonHeight + pad)) + 'px',
+            leftInitial: randomInt(pad, vw - 100 - (balloonWidth + pad)) + 'px',
+            topInitial: randomInt(pad, vh - 300 - (balloonHeight + pad)) + 'px',
             stringAngle: '0deg',
         }
         return newBalloon;
@@ -41,8 +41,7 @@ function Home(){
     };
 
     function removeBalloon(index) {
-        const newBalloonArr = balloonArr.filter((_, i) => i !== index);
-        setBalloonArr(newBalloonArr);
+        document.getElementById(`${index}`).remove();
     };
 
     function calcBalloonProps(balloon){
@@ -51,19 +50,21 @@ function Home(){
         const bw = parseInt(balloon.width, 10);
         const bh = parseInt(balloon.height, 10);
 
-        const left1 = parseInt(balloon.leftInitial, 10) + bw/2;
-        const top1 = parseInt(balloon.topInitial, 10) + bh/2;
-        const left2 = vw/2;
-        const top2 = vh - 140;
-        const dx = left2-left1;
-        const dy = top2-top1;
+        const initialX = parseInt(balloon.leftInitial, 10);
+        const initialY = parseInt(balloon.topInitial, 10);
+        const centerX = initialX + bw/2;
+        const centerY = initialY + bh/2;
+        const houseX = vw/2;
+        const houseY = vh - 140;
+        const dx = houseX - centerX;
+        const dy = houseY - centerY;
 
         const angle = Math.round(Math.atan(dx/dy) * 180 / Math.PI);
         const height = Math.sqrt(dx*dx + dy*dy);
         const top = bh/2 + (bh/2+10) * Math.cos(angle * (Math.PI / 180));
         const left = bw/2 + (bh/2+10) * Math.sin(angle * (Math.PI / 180));
 
-        return { angle: -angle+'deg', height, top, left }
+        return { angle: -angle+'deg', top, left, height, initialX, initialY, houseX, houseY}
     }
 
     function randomInt(min, max) {
@@ -78,7 +79,8 @@ function Home(){
             const b = balloonArr[i];
             const balloonProps = calcBalloonProps(b);
             result.push(
-                <BalloonWrapper key={i} onClick={() => removeBalloon(i)} $leftInitial={b.leftInitial} $topInitial={b.topInitial}>
+                <BalloonWrapper id={i} key={i} onClick={() => removeBalloon(i)} 
+                $topInitial={b.topInitial} $leftInitial={b.leftInitial} $initialX={balloonProps.initialX} $initialY={balloonProps.initialY} $houseX={balloonProps.houseX} $houseY={balloonProps.houseY}>
                     <BalloonDiv $balloonColor={b.balloonColor} $hilightColor={b.hilightColor} $angle={balloonProps.angle}></BalloonDiv>
                     <String $top={balloonProps.top} $left={balloonProps.left} $angle={balloonProps.angle} $height={balloonProps.height}></String>
                 </BalloonWrapper>
@@ -116,11 +118,11 @@ const Box = styled.div`
 `;
 
 const BalloonWrapper = styled.div`
-    background-color: red;
     position: absolute;
     left: ${props => props.$leftInitial};
     top: ${props => props.$topInitial};
     width: 85px;
+    animation: ${props => float(props.$houseX, props.$houseY, props.$initialX, props.$initialY)} 1s;
 `;
 
 const String = styled.div`
@@ -132,14 +134,15 @@ const String = styled.div`
     width: 2px;
     height: ${props => props.$height}px;
     background: #000000ff;
-    opacity: 0.5;
+    opacity: 0.7;
+    animation: ${props => stringHeight(props.$height)} 1s;
 `;
 
 const BalloonDiv = styled.div`
     position: absolute;
     width: 90px;
     height: 100px;
-    background: ${props => props.$balloonColor};
+    background: radial-gradient(#e5e7ff 1%, ${props => props.$balloonColor} 80%);
     border-radius: 50%;
     border: 1px solid black;
     transform: rotate(${props => props.$angle});
@@ -168,7 +171,11 @@ const BalloonDiv = styled.div`
         clip-path: polygon(30% 0%, 70% 0%, 100% 100%, 0% 100%);
         border-radius: 20%;
         border-bottom: 1px solid black;
-      }
+    }
+
+    &:hover {
+        opacity: 0.5;
+    }
 `;
 
 const House = styled.img`
@@ -181,6 +188,32 @@ const House = styled.img`
 
     &:hover {
         width: 330px;
+    }
+`;
+
+const float = (left1, top1, left2, top2) => keyframes`
+    0% {
+        opacity: 0;
+        left: ${left1}px;
+        top: ${top1}px;
+        transform: translate3d(0, 100%, 0);
+    }
+    to {
+        opacity: 1;
+        left: ${left2}px;
+        top: ${top2}px;
+        transform: translateZ(0);
+    }
+`;
+
+const stringHeight = (height) => keyframes`
+    0% {
+        opacity: 0;
+        height: 0px;
+    }
+    to {
+        opacity: 0.7;
+        height: ${height}px;
     }
 `;
 
