@@ -1,40 +1,41 @@
 import styled, { keyframes } from "styled-components";
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import houseImg from "./assets/house.png";
 import bearImg from "./assets/bear.png";
 import flowerImg from "./assets/flower.png";
-import Background from "./Background"
-
+import Background from "./Background";
+import mojs from '@mojs/core';
+import useInterval from "./UseInterval";
 
 function Home(){
-    const balloonColorArr = ['#ff93aa', '#ff3e39', '#fdcc22', '#3b25cb', '#c7dd25'];
-    const balloonShapeArr = ['bear', 'flower', 'circle', 'circle', 'circle'];
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const balloonColorArr = ['#ff93aa', '#ff3e39', '#fdcc22', '#3b25cb', '#6a15ba', '#c7dd25'];
+    const balloonShapeArr = ['bear', 'flower', 'circle', 'circle', 'circle', 'circle'];
     const shapeWidth = {circle: 90, bear: 122, flower: 105};
+    const [balloonArr, setBalloonArr] = useState(([]));
 
-    const [balloonArr, setBalloonArr] = useState(() => initBalloonArr());
-
-    function initBalloonArr() {
-        const balloonNumber = 5;
-        const result = [];
-        for(let i = 0; i < balloonNumber; i++){
-            result.push(createBalloon(i));
+    let delay = 50;
+    useInterval(() => {
+        const balloonNumber = vw > 768 ? 100 : 30;
+        if(balloonArr.length < balloonNumber){
+            console.log('interval')
+            addBalloon();
+        } else {
+            delay = null;
         }
-        return result;
-    }
+    }, delay);
 
     function createBalloon(i) {
-        const vw = window.innerWidth;
-        const vh = window.innerHeight;
         const shape = balloonShapeArr[Math.floor(Math.random() * balloonShapeArr.length)];
-        const balloonWidth = shapeWidth[shape]; //{circle: 90, bear: 122, flower: 114};
+        const balloonWidth = shapeWidth[shape];
         const balloonHeight = 100;
         const pad = 10;
-
         const newBalloon = {
             shape,
             width: balloonWidth + 'px',
             height: balloonHeight + 'px',
-            balloonColor: balloonColorArr[Math.floor(Math.random() * balloonColorArr.length)],
+            balloonColor: findBalloonColor(shape),
             hilightColor: 'white',
             leftInitial: randomIntWidth(vw, balloonWidth, i) + 'px',
             topInitial: randomIntHeight(0, vh - 300 - (balloonHeight + pad )) + 'px',
@@ -48,13 +49,46 @@ function Home(){
         setBalloonArr([...balloonArr, newBalloon]);
     };
 
-    function removeBalloon(index) {
+    function removeBalloon(e, index, color) {
         document.getElementById(`${index}`).remove();
+        popBalloon(e, color);
     };
 
+    function popBalloon(e, color) {
+        const burst = new mojs.Burst({
+            left: 0,
+            top: 0,
+            radius: { 10 : 90 },
+            count: 10,
+            duration: 3000,
+            children: {
+              shape: [ 'circle', 'polygon', 'rect'],
+              fill:  [ color, 'white' ],
+              angle: { 0: 180 },
+              degreeShift: 'rand(-360, 360)',
+              delay: 'stagger(0, 50)',
+            }
+          });
+          burst.el.style.zIndex = 10;
+          burst
+          .tune({ x: e.pageX, y: e.pageY })
+          .replay();
+    }
+
+    function findBalloonColor(shape){
+        switch (shape) {
+            case 'circle':
+              return balloonColorArr[Math.floor(Math.random() * balloonColorArr.length)];
+            case 'flower':
+                return '#ffd300';
+            case 'bear':
+                return '#fa7514';
+            default:
+                return 'white'
+          }
+    }
+
     function calcBalloonProps(balloon){
-        const vw = window.innerWidth;
-        const vh = window.innerHeight;
         const bw = parseInt(balloon.width, 10);
         const bh = parseInt(balloon.height, 10);
 
@@ -78,7 +112,7 @@ function Home(){
     }
 
     function randomIntWidth(vw, w, balloonNum) {
-        const section = balloonNum/5;
+        const section = balloonNum / 10;
         let min = vw/2 - (section + 1) * w;
         let max = vw/2 + section * w;
         if (min < 0) { min = 0; }
@@ -99,14 +133,19 @@ function Home(){
             const b = balloonArr[i];
             const balloonProps = calcBalloonProps(b);
             result.push(
-                <BalloonWrapper id={i} key={i} onClick={() => removeBalloon(i)} 
+                <BalloonWrapper id={i} key={i} onClick={(e) => removeBalloon(e, i, b.balloonColor)}
                 $topInitial={b.topInitial} $leftInitial={b.leftInitial} $initialX={balloonProps.initialX} $initialY={balloonProps.initialY} $houseX={balloonProps.houseX} $houseY={balloonProps.houseY}>
                     {
                         b.shape === 'circle' ? <BalloonDiv $balloonColor={b.balloonColor} $hilightColor={b.hilightColor} $angle={balloonProps.angle}></BalloonDiv>
                         :b.shape === 'bear' ? <Bear $angle={balloonProps.angle} src={bearImg} />
+                        // onMouseOver="this.src={flowerImg}" onMouseOut="this.src={bearImg}"/>
                         :b.shape === 'flower' ? <Flower $angle={balloonProps.angle} src={flowerImg} />
                         :''
                     }
+
+
+
+
                     <String $top={balloonProps.top} $left={balloonProps.left} $angle={balloonProps.angle} $height={balloonProps.height}></String>
                 </BalloonWrapper>
             );
@@ -116,7 +155,8 @@ function Home(){
 
     return (
         <Bg>
-            <Background></Background>
+            <Background>
+            </Background>
             <Objects>
                 <Box>
                     {balloonSet()}
@@ -159,6 +199,11 @@ const BalloonWrapper = styled.div`
     top: ${props => props.$topInitial};
     width: 85px;
     animation: ${props => float(props.$houseX, props.$houseY, props.$initialX, props.$initialY)} 1s;
+    transition: width 0.5s, height 0.5s;
+    
+    &:hover {
+        z-index: 1;
+    }
 `;
 
 const String = styled.div`
@@ -210,7 +255,6 @@ const BalloonDiv = styled.div`
     }
 
     &:hover {
-        border: 2px solid black;
         background: ${props => props.$balloonColor};
     }
 `;
@@ -225,7 +269,7 @@ const Bear = styled.img`
     transform: rotate(${props => props.$angle});
 
     &:hover {
-        filter: grayscale(100%);
+        filter: brightness(1.2);
     }
 `;
 
@@ -240,7 +284,7 @@ const Flower = styled.img`
     transform: rotate(${props => props.$angle});
 
     &:hover {
-        filter: grayscale(100%);
+        filter: saturate(3);
     }
 `;
 
@@ -251,6 +295,7 @@ const House = styled.img`
     margin-left: auto;
     margin-right: auto;
     transition: width 0.5s, height 0.5s;
+    z-index: 10;
 
     &:hover {
         width: 330px;

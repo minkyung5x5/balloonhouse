@@ -24,7 +24,7 @@ function Background(){
     for (let i = 0; i < cloudNumber; i++) {
         const c = cloudArr[i]
         result.push(
-          <Cloud key={i} $multi={c.multi} $top={c.top} $left={c.left} $rotate={c.rotate}></Cloud>
+          <Cloud key={'cloud-'+i} $multi={c.multi} $top={c.top} $left={c.left} $rotate={c.rotate}></Cloud>
         );
     }
     return result;
