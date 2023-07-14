@@ -1,9 +1,9 @@
 import styled, {keyframes} from 'styled-components';
 
 function Background(){
-
   const vh = window.innerHeight;
   const vw = window.innerWidth;
+  const isMobile = vw < 768;
   const cloudArr = [
     { multi: 1.7, top: vh - 70, left: vw/6, rotate: 5 },
     { multi: 0.7, top: vh - 150, left: vw * 3/5, rotate: -5 },
@@ -16,19 +16,21 @@ function Background(){
 
   const cloudSet = () => {
     const result = [];
-    const isMobile = vw < 768;
     const cloudNumber = isMobile ? 3 : 7;
-    if(!isMobile){
-      result.push(<Rainbow></Rainbow>)
+
+    if(!isMobile) {
+      result.push(<Rainbow></Rainbow>);
     }
+
     for (let i = 0; i < cloudNumber; i++) {
         const c = cloudArr[i]
         result.push(
-          <Cloud key={'cloud-'+i} $multi={c.multi} $top={c.top} $left={c.left} $rotate={c.rotate}></Cloud>
+          <Cloud key={'c'+i} $multi={c.multi} $top={c.top} $left={c.left} $rotate={c.rotate}></Cloud>
         );
     }
+
     return result;
-}
+  };
 
     return (
       <Sky>
@@ -36,17 +38,6 @@ function Background(){
       </Sky>
     );
 }
-
-const Sky = styled.div`
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  width: 100%;
-  height: 100vh;
-  overflow: hidden;
-  background: linear-gradient(#00f2ff, #0074f9);
-`;
-
 
 const swell = keyframes`
   from {
@@ -72,6 +63,22 @@ const bob = keyframes`
   }
 `;
 
+const rainbow = keyframes`
+  50% { 
+    transform: rotate(50deg); 
+  }
+`;
+
+const Sky = styled.div`
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  background: linear-gradient(#00f2ff, #0074f9);
+`;
+
 const Cloud = styled.div`
     background: #FFFFFF;
     border-radius: 50%;
@@ -88,10 +95,6 @@ const Cloud = styled.div`
     top: ${props => props.$top}px; 
     rotate: ${props => props.$rotate}deg;
     animation: 10s infinite ${swell}, 4s infinite ${bob};
-`;
-
-const rainbow = keyframes`
-  50% { transform: rotate(50deg); }
 `;
 
 const Rainbow = styled.div`

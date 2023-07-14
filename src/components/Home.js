@@ -1,11 +1,11 @@
 import styled, { keyframes } from "styled-components";
-import { useState, useEffect } from 'react';
-import houseImg from "./assets/house.png";
-import bearImg from "./assets/bear.png";
-import flowerImg from "./assets/flower.png";
+import { useState } from 'react';
+import houseImg from "../assets/house.png";
+import bearImg from "../assets/bear.png";
+import flowerImg from "../assets/flower.png";
 import Background from "./Background";
 import mojs from '@mojs/core';
-import useInterval from "./UseInterval";
+import useInterval from "../function/UseInterval";
 
 function Home(){
     const vw = window.innerWidth;
@@ -18,8 +18,7 @@ function Home(){
     let delay = 50;
     useInterval(() => {
         const balloonNumber = vw > 768 ? 100 : 30;
-        if(balloonArr.length < balloonNumber){
-            console.log('interval')
+        if(balloonArr.length < balloonNumber) {
             addBalloon();
         } else {
             delay = null;
@@ -41,8 +40,9 @@ function Home(){
             topInitial: randomIntHeight(0, vh - 300 - (balloonHeight + pad )) + 'px',
             stringAngle: '0deg',
         }
+
         return newBalloon;
-    }
+    };
 
     function addBalloon() {
         const newBalloon = createBalloon(balloonArr.length);
@@ -69,29 +69,29 @@ function Home(){
               delay: 'stagger(0, 50)',
             }
           });
-          burst.el.style.zIndex = 10;
-          burst
-          .tune({ x: e.pageX, y: e.pageY })
-          .replay();
-    }
+        
+        burst.el.style.zIndex = 10;
+        burst
+            .tune({ x: e.pageX, y: e.pageY })
+            .replay();
+    };
 
     function findBalloonColor(shape){
         switch (shape) {
             case 'circle':
-              return balloonColorArr[Math.floor(Math.random() * balloonColorArr.length)];
+                return balloonColorArr[Math.floor(Math.random() * balloonColorArr.length)];
             case 'flower':
                 return '#ffd300';
             case 'bear':
                 return '#fa7514';
             default:
                 return 'white'
-          }
-    }
+        }
+    };
 
     function calcBalloonProps(balloon){
         const bw = parseInt(balloon.width, 10);
         const bh = parseInt(balloon.height, 10);
-
         const initialX = parseInt(balloon.leftInitial, 10);
         const initialY = parseInt(balloon.topInitial, 10);
         const centerX = initialX + bw/2;
@@ -109,7 +109,7 @@ function Home(){
         const left = bw/2 + (shapeH) * Math.sin(angle * (Math.PI / 180));
 
         return { angle: -angle+'deg', top, left, height, initialX, initialY, houseX, houseY}
-    }
+    };
 
     function randomIntWidth(vw, w, balloonNum) {
         const section = balloonNum / 10;
@@ -119,13 +119,16 @@ function Home(){
         if (max > vw - w) { max = vw - w;}
         if (max == null) { max = min; min = 0; }
         if (min > max) { var tmp = min; min = max; max = tmp; }
+
         return Math.floor(min + (max - min + 1) * Math.random());
-    }
+    };
+
     function randomIntHeight(min, max) {
         if (max == null) { max = min; min = 0; }
         if (min > max) { var tmp = min; min = max; max = tmp; }
+
         return Math.floor(min + (max - min + 1) * Math.random());
-    }
+    };
 
     const balloonSet = () => {
         const result = [];
@@ -133,7 +136,7 @@ function Home(){
             const b = balloonArr[i];
             const balloonProps = calcBalloonProps(b);
             result.push(
-                <BalloonWrapper id={i} key={i} onClick={(e) => removeBalloon(e, i, b.balloonColor)}
+                <BalloonWrapper id={i} key={'b'+i} onClick={(e) => removeBalloon(e, i, b.balloonColor)}
                 $topInitial={b.topInitial} $leftInitial={b.leftInitial} $initialX={balloonProps.initialX} $initialY={balloonProps.initialY} $houseX={balloonProps.houseX} $houseY={balloonProps.houseY}>
                     {
                         b.shape === 'circle' ? <BalloonDiv $balloonColor={b.balloonColor} $hilightColor={b.hilightColor} $angle={balloonProps.angle}></BalloonDiv>
@@ -142,19 +145,15 @@ function Home(){
                         :b.shape === 'flower' ? <Flower $angle={balloonProps.angle} src={flowerImg} />
                         :''
                     }
-
-
-
-
                     <String $top={balloonProps.top} $left={balloonProps.left} $angle={balloonProps.angle} $height={balloonProps.height}></String>
                 </BalloonWrapper>
             );
         }
         return result;
-    }
+    };
 
     return (
-        <Bg>
+        <Window>
             <Background>
             </Background>
             <Objects>
@@ -163,15 +162,41 @@ function Home(){
                 </Box>
                 <House onClick={() => addBalloon()} src={houseImg} />
             </Objects>
-        </Bg>
+        </Window>
     );
 }
 
-const Bg = styled.div`
+const float = (left1, top1, left2, top2) => keyframes`
+    0% {
+        opacity: 0;
+        left: ${left1}px;
+        top: ${top1}px;
+        transform: translate3d(0, 100%, 0);
+    }
+    to {
+        opacity: 1;
+        left: ${left2}px;
+        top: ${top2}px;
+        transform: translateZ(0);
+    }
+`;
+
+const stretch = (height) => keyframes`
+    0% {
+        opacity: 0;
+        height: 0px;
+    }
+    to {
+        opacity: 0.7;
+        height: ${height}px;
+    }
+`;
+
+const Window = styled.div`
     position: static;
     width: 100%;
     height: 100vh;
-`
+`;
 
 const Objects = styled.div`
     position: absolute;
@@ -200,7 +225,6 @@ const BalloonWrapper = styled.div`
     width: 85px;
     animation: ${props => float(props.$houseX, props.$houseY, props.$initialX, props.$initialY)} 1s;
     transition: width 0.5s, height 0.5s;
-    
     &:hover {
         z-index: 1;
     }
@@ -216,7 +240,7 @@ const String = styled.div`
     height: ${props => props.$height}px;
     background: #000000ff;
     opacity: 0.7;
-    animation: ${props => stringHeight(props.$height)} 1s;
+    animation: ${props => stretch(props.$height)} 1s;
 `;
 
 const BalloonDiv = styled.div`
@@ -267,7 +291,6 @@ const Bear = styled.img`
     margin-right: auto;
     transition: width 0.5s, height 0.5s;
     transform: rotate(${props => props.$angle});
-
     &:hover {
         filter: brightness(1.2);
     }
@@ -279,10 +302,8 @@ const Flower = styled.img`
     height: 100px;
     margin-left: auto;
     margin-right: auto;
-
     transition: width 0.5s, height 0.5s;
     transform: rotate(${props => props.$angle});
-
     &:hover {
         filter: saturate(3);
     }
@@ -296,35 +317,8 @@ const House = styled.img`
     margin-right: auto;
     transition: width 0.5s, height 0.5s;
     z-index: 10;
-
     &:hover {
         width: 330px;
-    }
-`;
-
-const float = (left1, top1, left2, top2) => keyframes`
-    0% {
-        opacity: 0;
-        left: ${left1}px;
-        top: ${top1}px;
-        transform: translate3d(0, 100%, 0);
-    }
-    to {
-        opacity: 1;
-        left: ${left2}px;
-        top: ${top2}px;
-        transform: translateZ(0);
-    }
-`;
-
-const stringHeight = (height) => keyframes`
-    0% {
-        opacity: 0;
-        height: 0px;
-    }
-    to {
-        opacity: 0.7;
-        height: ${height}px;
     }
 `;
 
