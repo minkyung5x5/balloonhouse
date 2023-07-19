@@ -141,7 +141,6 @@ function Home(){
                     {
                         b.shape === 'circle' ? <BalloonDiv $balloonColor={b.balloonColor} $hilightColor={b.hilightColor} $angle={balloonProps.angle}></BalloonDiv>
                         :b.shape === 'bear' ? <Bear $angle={balloonProps.angle} src={bearImg} />
-                        // onMouseOver="this.src={flowerImg}" onMouseOut="this.src={bearImg}"/>
                         :b.shape === 'flower' ? <Flower $angle={balloonProps.angle} src={flowerImg} />
                         :''
                     }
